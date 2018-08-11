@@ -21,7 +21,7 @@ public class ShipPiece : MonoBehaviour {
     public GameObject explosion;
     // Use this for initialization
     void Start () {
-		
+        if (hp <= 0) { hp = 1; }
 	}
 	
 	// Update is called once per frame
@@ -47,6 +47,7 @@ public class ShipPiece : MonoBehaviour {
         if (cooldowntimer <= 0)
         {
             cooldowntimer = cooldown;
+            //TODO: change to switch case
             if (type == 0)
             {
                 firelasers();
@@ -55,17 +56,22 @@ public class ShipPiece : MonoBehaviour {
             {
                 useengines();
             }
-            else
+            else if (type == 2)
             {
                 turnonshields();
             }
+            else { }
         }
     }
     public void OnMouseDown()
     {
-        if (placed == false)
+        if (placed == false && destroyed == false)
         {
-            player.selectedpiece = this.gameObject;
+            if (player.selectedpiece == this.gameObject)
+            { rotatepiece(); }
+            else
+            { player.PieceSelected(this.gameObject); }
+           
         }
     }
     public void rotatepiece()
@@ -89,15 +95,17 @@ public class ShipPiece : MonoBehaviour {
 
     }
     public void turnonshields() { if (partactivated == true) { activateObject.active = false; partactivated = false; } else { partactivated = true; activateObject.active = true; } }
-    public void takedmg(int dmg)
+
+    public void TakeDamage(int dmg)
     {
         hp -= dmg;
         if (hp <= 0)
         {
+            destroyed = true;
+            Instantiate(explosion, transform.position, transform.rotation);
             if (myspace != null) { myspace.GetComponent<ShipSpace>().mypiecedestroyed(); }
         }
     }
-
 
 
     public void OnCollisionEnter(Collision collision)
@@ -111,33 +119,24 @@ public class ShipPiece : MonoBehaviour {
             }
             else
             {
-                destroyed = true;
-                // Destroy(collision.gameObject);
-                   Instantiate(explosion, transform.position, transform.rotation);
-                myspace.GetComponent<ShipSpace>().mypiecedestroyed();
+                TakeDamage(collision.gameObject.GetComponent<Bullet>().damage);
+                
             }
             Destroy(collision.gameObject);
         }
     }
     public void OnTriggerEnter(Collider col)
     {
-        if (col.gameObject.tag == "Bullet")
+        if (col.gameObject.tag == "Bullet" && type == 2)
         {
-           // if (type == 2 && partactivated == true)
-          //  {
                 activateObject.active = false;
                 partactivated = false;
                 Destroy(col.gameObject);
-
-           // }
-            //else
-            //{
-            //    destroyed = true;
-            //    // Destroy(collision.gameObject);
-            //    Instantiate(explosion, transform.position, transform.rotation);
-            //    myspace.GetComponent<ShipSpace>().mypiecedestroyed();
-            //}
-            
         }
+        if (col.gameObject.tag == "Engine")
+        {
+            TakeDamage(hp);
+        }
+
     }
 }

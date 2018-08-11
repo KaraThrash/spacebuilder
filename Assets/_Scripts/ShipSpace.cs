@@ -24,7 +24,7 @@ public class ShipSpace : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        temppiece = GameObject.Find("temppiece");
+       // temppiece = GameObject.Find("temppiece");
 
        // shiplocation = new Vector2(transform.localPosition.x, transform.localPosition.y);
        // this.transform.name = (shiplocation.x + "" + shiplocation.y);
@@ -36,30 +36,8 @@ public class ShipSpace : MonoBehaviour {
 		
 	}
 
-    public void ConnectTo()
-    {//when a square adjacent enables this piece to be used
-        adjacentpossibleconnections++;
-        adjacenttosetpiece = true;
-        GetComponent<Renderer>().material = setable;
+   
 
-    }
-    public void Disconnectfrom()
-    {//when a square adjacent enables this piece to be used
-        adjacentpossibleconnections--;
-        if (adjacentpossibleconnections <= 0)
-        {
-            adjacentpossibleconnections = 0;
-               adjacenttosetpiece = false;
-            GetComponent<Renderer>().material = disabled;
-        }
-    }
-    public void makenewconnection(Vector2 newloc,int whichconnection)
-    {
-       
-        GameObject clone = Instantiate(newpiece, transform.position + new Vector3(newloc.x,newloc.y,0), transform.rotation) as GameObject;
-        clone.transform.parent = this.transform;
-       // clone.GetComponent<ShipSpace>().connections[whichconnection] = -1;
-    }
     public void SetPiece(GameObject newpiece)
     {
         //GetComponent<Renderer>().material = setable;
@@ -102,7 +80,7 @@ public class ShipSpace : MonoBehaviour {
                 shippart.GetComponent<ShipPiece>().myspace = this.gameObject;
                 GetComponent<Renderer>().enabled = false;
                 //shippart.transform.rotation = this.transform.rotation;
-                player.updateshippartlist(true, shippart) ;
+                player.Addpiece(shippart);
 
                 if (topneighbor != null && shippart.GetComponent<ShipPiece>().connector0 == true) { topneighbor.UpdateConnections(1); }
                 if (botneighbor != null && shippart.GetComponent<ShipPiece>().connector2 == true) { botneighbor.UpdateConnections(1); }
@@ -121,10 +99,25 @@ public class ShipSpace : MonoBehaviour {
     public void UpdateConnections(int upordown)
     {
         connections += upordown;//-1 if connection destroyed 1 if adding
-        if (connections <= 0) { connections = 0; GetComponent<Renderer>().enabled = false; }//float away into space ??can it still activate?
+        if (connections <= 0) {
+            connections = 0;
+            GetComponent<Renderer>().enabled = false;
+            if (shippart != null)
+            {
+                if (topneighbor != null && shippart.GetComponent<ShipPiece>().connector0 == true) { topneighbor.UpdateConnections(-1); }
+                if (botneighbor != null && shippart.GetComponent<ShipPiece>().connector2 == true) { botneighbor.UpdateConnections(-1); }
+                if (leftneighbor != null && shippart.GetComponent<ShipPiece>().connector3 == true) { leftneighbor.UpdateConnections(-1); }
+                if (rightneighbor != null && shippart.GetComponent<ShipPiece>().connector1 == true) { rightneighbor.UpdateConnections(-1); }
+                player.Removepiece(shippart.GetComponent<ShipPiece>().type, shippart.GetComponent<ShipPiece>().speed);
+                shippart.transform.parent = null;
+                shippart.GetComponent<ShipPiece>().placed = false;
+                shippart.GetComponent<Rigidbody>().isKinematic = false;
+                shippart.GetComponent<Rigidbody>().AddForce((transform.position - mainShip.transform.position) * 300.0f * Time.deltaTime);
+            }
+        }//float away into space ??can it still activate?
         else
         {
-            if (shippart == null) { GetComponent<Renderer>().enabled = true; }
+            if (shippart == null && upordown == 0) { GetComponent<Renderer>().enabled = true; }
         }
 
         //if (connections > 4) { connections = 4; } //?leave open ended for special pieces later?
@@ -138,8 +131,8 @@ public class ShipSpace : MonoBehaviour {
         if (botneighbor != null && shippart.GetComponent<ShipPiece>().connector2 == true) { botneighbor.UpdateConnections(-1); }
         if (leftneighbor != null && shippart.GetComponent<ShipPiece>().connector3 == true) { leftneighbor.UpdateConnections(-1); }
         if (rightneighbor != null && shippart.GetComponent<ShipPiece>().connector1 == true) { rightneighbor.UpdateConnections(-1); }
-        
-          //  player.updateshippartlist(false, shippart);
+
+            player.Removepiece(shippart.GetComponent<ShipPiece>().type, shippart.GetComponent<ShipPiece>().speed);
             Destroy(shippart);
             shippart = null;
         }

@@ -5,6 +5,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour {
     public float speed;
     public float lifetime;
+    public int damage;
 	// Use this for initialization
 	void Start () {
         GetComponent<Rigidbody>().AddForce(transform.forward * speed * Time.deltaTime,ForceMode.Impulse);
