@@ -99,15 +99,18 @@ public class ShipSpace : MonoBehaviour {
                 shippart = player.selectedpiece;
                 shippart.transform.position = this.transform.position;
                 shippart.GetComponent<ShipPiece>().placed = true;
+                shippart.GetComponent<ShipPiece>().myspace = this.gameObject;
                 GetComponent<Renderer>().enabled = false;
                 //shippart.transform.rotation = this.transform.rotation;
-                player.updateshippartlist() ;
+                player.updateshippartlist(true, shippart) ;
 
-                if (topneighbor != null) { topneighbor.UpdateConnections(1); }
-                if (botneighbor != null) { botneighbor.UpdateConnections(1); }
-                if (leftneighbor != null) { leftneighbor.UpdateConnections(1); }
-                if (rightneighbor != null) { rightneighbor.UpdateConnections(1); }
-              
+                if (topneighbor != null && shippart.GetComponent<ShipPiece>().connector0 == true) { topneighbor.UpdateConnections(1); }
+                if (botneighbor != null && shippart.GetComponent<ShipPiece>().connector2 == true) { botneighbor.UpdateConnections(1); }
+                if (leftneighbor != null && shippart.GetComponent<ShipPiece>().connector3 == true) { leftneighbor.UpdateConnections(1); }
+                if (rightneighbor != null && shippart.GetComponent<ShipPiece>().connector1 == true) { rightneighbor.UpdateConnections(1); }
+                shippart.transform.parent = this.transform;
+                shippart.transform.rotation = this.transform.rotation;
+                shippart.transform.Rotate(0, 90 * shippart.GetComponent<ShipPiece>().rotations, 0);
             }
         }
 
@@ -118,7 +121,7 @@ public class ShipSpace : MonoBehaviour {
     public void UpdateConnections(int upordown)
     {
         connections += upordown;//-1 if connection destroyed 1 if adding
-        if (connections < 0) { connections = 0; }//float away into space ??can it still activate?
+        if (connections <= 0) { connections = 0; GetComponent<Renderer>().enabled = false; }//float away into space ??can it still activate?
         else
         {
             if (shippart == null) { GetComponent<Renderer>().enabled = true; }
@@ -129,12 +132,18 @@ public class ShipSpace : MonoBehaviour {
     }
     public void mypiecedestroyed()
     {
-        Destroy(shippart);
-        shippart = null;
-        if (topneighbor != null) { topneighbor.UpdateConnections(-1); }
-        if (botneighbor != null) { botneighbor.UpdateConnections(-1); }
-        if (leftneighbor != null) { leftneighbor.UpdateConnections(-1); }
-        if (rightneighbor != null) { rightneighbor.UpdateConnections(-1); }
+        if (shippart != null)
+        {
+            if (topneighbor != null && shippart.GetComponent<ShipPiece>().connector0 == true) { topneighbor.UpdateConnections(-1); }
+        if (botneighbor != null && shippart.GetComponent<ShipPiece>().connector2 == true) { botneighbor.UpdateConnections(-1); }
+        if (leftneighbor != null && shippart.GetComponent<ShipPiece>().connector3 == true) { leftneighbor.UpdateConnections(-1); }
+        if (rightneighbor != null && shippart.GetComponent<ShipPiece>().connector1 == true) { rightneighbor.UpdateConnections(-1); }
+        
+          //  player.updateshippartlist(false, shippart);
+            Destroy(shippart);
+            shippart = null;
+        }
+      
     }
 
 }

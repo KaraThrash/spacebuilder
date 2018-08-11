@@ -7,8 +7,10 @@ public class ShipMain : MonoBehaviour {
     public List<GameObject> squares;
     public Dictionary<Vector2, GameObject> spacesOnShip;
     public GameObject shipspaceprefab;
-	// Use this for initialization
-	void Start () {
+    public GameObject spaceparent;
+    public GameObject cam,pieceholder;
+    // Use this for initialization
+    void Start () {
         // List<GameObject> squares = new List<GameObject>();
        // Dictionary<Vector2, GameObject> spacesOnShip = new Dictionary<Vector2, GameObject>();
        // string tempstring = "";
@@ -25,8 +27,11 @@ public class ShipMain : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-		
-	}
+        spaceparent.transform.position = this.transform.position;
+        spaceparent.transform.rotation = this.transform.rotation;
+        cam.transform.position = transform.position;
+       // cam.transform.rotation = transform.rotation;
+    }
     
 
 }
