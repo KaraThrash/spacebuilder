@@ -147,6 +147,7 @@ public class Player : MonoBehaviour
         selectedpiece = newPiece;
         selectedpiece.transform.position = holdpiecespot.transform.position;
         selectedpiece.transform.rotation = holdpiecespot.transform.rotation;
+        selectedpiece.transform.parent = holdpiecespot.transform;
         foreach (Transform child in shipspaces)
         {
             child.gameObject.GetComponent<ShipSpace>().UpdateConnections(0);
@@ -192,7 +193,9 @@ public class Player : MonoBehaviour
 
                 }
                 break;
-            default:
+
+           
+            case 2:
                 for (int i = shields.Count - 1; i > -1; i--)
                 {
                     if (shields[i] == null)
@@ -200,6 +203,9 @@ public class Player : MonoBehaviour
                     else { shields[i].GetComponent<ShipPiece>().activate(); }
 
                 }
+                break;
+            default:
+                Application.LoadLevel(1);
                 break;
         }
 

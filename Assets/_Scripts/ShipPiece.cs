@@ -21,6 +21,7 @@ public class ShipPiece : MonoBehaviour {
     public GameObject explosion;
     // Use this for initialization
     void Start () {
+        player = GameObject.Find("Player").GetComponent<Player>();
         if (hp <= 0) { hp = 1; }
 	}
 	
@@ -70,7 +71,7 @@ public class ShipPiece : MonoBehaviour {
             if (player.selectedpiece == this.gameObject)
             { rotatepiece(); }
             else
-            { player.PieceSelected(this.gameObject); }
+            { player.PieceSelected(this.gameObject); GetComponent<Rigidbody>().isKinematic = true; }
            
         }
     }
@@ -103,7 +104,7 @@ public class ShipPiece : MonoBehaviour {
         {
             destroyed = true;
             Instantiate(explosion, transform.position, transform.rotation);
-            if (myspace != null) { myspace.GetComponent<ShipSpace>().mypiecedestroyed(); }
+            if (myspace != null) { myspace.GetComponent<ShipSpace>().mypiecedestroyed(); } else { Destroy(this.gameObject); }
         }
     }
 

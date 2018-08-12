@@ -57,8 +57,23 @@ public class ShipMain : MonoBehaviour {
                 batterytext.text = tempstring;
             }
         }
-
-       // cam.transform.rotation = transform.rotation;
+        if (transform.position.x > 350)
+        {
+            transform.position = new Vector3(-300,0,transform.position.z);
+        }
+        if (transform.position.x < -350)
+        {
+            transform.position = new Vector3(300, 0, transform.position.z);
+        }
+        if (transform.position.z > 350)
+        {
+            transform.position = new Vector3(transform.position.x, 0, -300);
+        }
+        if (transform.position.z < -350)
+        {
+            transform.position = new Vector3(transform.position.x, 0, 300);
+        }
+        // cam.transform.rotation = transform.rotation;
     }
     public void TakeDamage(int dmg)
     {
